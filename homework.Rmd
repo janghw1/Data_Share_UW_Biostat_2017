@@ -1,5 +1,5 @@
 ---
-title: "SISBID 2017 Module 3 Homework"
+title: "I change the title"
 author: "Keith Baggerly and Karl Broman"
 date: "7/14/2017"
 output:
