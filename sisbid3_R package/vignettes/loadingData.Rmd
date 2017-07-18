@@ -1,0 +1,106 @@
+---
+title: "Loading Raw and Processed Data"
+author: "Keith Baggerly"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+I want to work through how to include raw and processed data files. 
+
+Let's say we have a csv file, "basicData.csv", which we want to 
+summarize. 
+
+First, at the top level of the package (which has R/ and man/), we create a new folder for "inst/" (install) if this doesn't already exist. 
+
+Next, within inst we similarly create a subfolder for "extdata".
+
+This is where raw data should be put. 
+
+We copy basicData.csv into inst/extdata.
+
+Then, we recompile the package using "Ctrl-Shift-B". This will add the csv file as a "system file" for the package. 
+
+Let's see where this is now in sisbid3.
+
+```{r checkSisbid3}
+
+system.file("extdata", "basicData.csv",
+            package = "sisbid3")
+
+```
+
+This is the path to where the csv file resides on your system. Now we want to load this data, process it, and store the processed version for later use. 
+
+```{r processTheData}
+
+basicData <- 
+  read.csv(system.file("extdata", "basicData.csv",
+                       package = "sisbid3"))
+basicData
+
+```
+
+Now we want to save this as a processed (.Rda) file. 
+
+```{r saveTheData, eval=FALSE}
+
+use_data(basicData)
+
+```
+
+This creates "data/basicData.rda". Now, as with all objects, we need to document the data. So, we go to R/, add "basicData.R":
+
+```{r documentingBasicData, eval=FALSE}
+
+#' A small basic dataset
+#'
+#' This is just an example to see if I can get
+#' this to work
+#'
+#' @format A data frame with 5 rows and 2 columns
+#' \describe{
+#'   \item{basicDataX}{simulated X values}
+#'   \item{basicDataY}{simulated Y values}
+#' }
+#' @source I made this up
+"basicData"
+
+```
+
+Invoke document (to document the dataset), and recompile the package using Ctrl-Shift-B. At this point, the basicData dataset is available at any time. 
+
+Now let's consider a more realistic example. 
+
+Say we copy over the iomReview.csv to inst/extdata, and recompile the package so it's findable using system.file.
+
+```{r showIomReview}
+
+system.file("extdata", "iomReview.csv",
+            package = "sisbid3")
+
+```
+
+Now we can load the contents into an R dataset called "vitD" and invoke "use_data".
+
+```{r invokeVitD, eval=FALSE}
+
+vitD <- 
+  read.csv(system.file("extdata", 
+                       "iomReview.csv", 
+                       package = "sisbid3"))
+vitD <- vitD[!is.na(vitD[,"N"]),]
+
+use_data(vitD)
+
+```
+
+This creates "data/vitD.rda".
+
+We still need to document it. Here, the full documentation is in the "vitD.R" file available from the Module3 website, so we simply copy this file over to R/.
+
+Then we invoke document (to document the dataset), and then recompile the package. The vitD object is now part of the package.
+
